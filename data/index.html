@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telemetria da Bateria</title>
+  <style>
+    body { background-color: #121212; color: #00ffcc; font-family: 'Courier New', Courier, monospace; text-align: center; padding-top: 50px; }
+    .card { background-color: #1e1e1e; border: 1px solid #333; border-radius: 10px; padding: 20px; margin: 10px auto; width: 80%; max-width: 400px; box-shadow: 0 4px 8px rgba(0,0,0,0.5); }
+    h1 { color: #ffffff; }
+    .valor { font-size: 2em; font-weight: bold; margin: 10px 0; }
+    .unidade { font-size: 0.5em; color: #888; }
+  </style>
+</head>
+<body>
+  <h1>Bateria (Master)</h1>
+  <div class="card">Tensão (V)<br><span class="valor" id="v_master">--</span></div>
+  <div class="card">Corrente (mA)<br><span class="valor" id="c_master">--</span></div>
+  <div class="card">Potência (mW)<br><span class="valor" id="p_master">--</span></div>
+
+  <script>
+    // Pede dados novos ao robô a cada 1 segundo (1000 ms)
+    setInterval(function() {
+      fetch('/dados').then(response => response.json()).then(data => {
+        document.getElementById('v_master').innerText = data.v_master.toFixed(2);
+        document.getElementById('c_master').innerText = data.c_master.toFixed(2);
+        document.getElementById('p_master').innerText = data.p_master.toFixed(2);
+      });
+    }, 1000);
+  </script>
+</body>
+</html>
