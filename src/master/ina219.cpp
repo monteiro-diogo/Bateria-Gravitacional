@@ -4,7 +4,7 @@
 
 Adafruit_INA219 ina219;
 
-bool iniciarSensor() {
+bool iniciarSensor() { // Função para iniciar o sensor INA219 ou semelhante
   if (!ina219.begin()) {
     return false;
   }
@@ -12,32 +12,26 @@ bool iniciarSensor() {
 }
 
 DadosEnergia lerDadosSensor() {
-  float shuntvoltage = 0;
   float busvoltage = 0;
   float current_mA = 0;
-  float loadvoltage = 0;
   float power_mW = 0;
   
-  shuntvoltage = ina219.getShuntVoltage_mV();
   busvoltage = ina219.getBusVoltage_V();
   current_mA = ina219.getCurrent_mA();
+  current_mA = abs(current_mA); // Para não nos dar valores negativos
   power_mW = ina219.getPower_mW();
-  loadvoltage = busvoltage + (shuntvoltage / 1000);
-  
-  // A nossa "Zona Morta" para manter o ecrã limpo a zeros
+
+  // Para evitar ruido
   if (busvoltage < 1.0) {
     busvoltage = 0.0;
-    shuntvoltage = 0.0;
     current_mA = 0.0;
   }
 
   // Preencher o pacote
-  DadosEnergia dados;
-  dados.tensao_fonte_V = busvoltage;
-  dados.tensao_shunt_mV = shuntvoltage;
-  dados.tensao_carga_V = loadvoltage;
-  dados.corrente_mA = current_mA;
-  dados.potencia_mW = power_mW;
+  DadosEnergia dados_master;
+  dados_master.tensao_V = busvoltage;
+  dados_master.corrente_mA = current_mA;
+  dados_master.potencia_mW = power_mW;
 
-  return dados;
+  return dados_master;
 }

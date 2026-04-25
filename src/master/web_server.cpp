@@ -1,6 +1,7 @@
 #include "web_server.h"
 #include "ina219.h"
 #include "segredos.h"
+#include "comms.h"
 #include <WiFi.h>
 #include <WebServer.h>
 #include <LittleFS.h>
@@ -37,8 +38,10 @@ void iniciarWebServer() {
 
   Serial.println("A iniciar a Rede Wi-Fi do Master...");
   
+  WiFi.mode(WIFI_AP_STA); // Força a placa a manter o modo Recetor ativo
+
   if (String(password).length() > 0) {
-    WiFi.softAP(ssid, password);
+    WiFi.softAP(ssid, password, 1); // Canal 1
   } else {
     WiFi.softAP(ssid);
   }
@@ -60,10 +63,30 @@ void iniciarWebServer() {
   });
 
   server.on("/dados", []() {
-    DadosEnergia dados = lerDadosSensor();
-    String json = "{\"v_master\":" + String(dados.tensao_fonte_V) + 
-                  ",\"c_master\":" + String(dados.corrente_mA) + 
-                  ",\"p_master\":" + String(dados.potencia_mW) + "}";
+    // 1. Lê os dados do INA219 local
+    DadosEnergia dados_master = lerDadosSensor();
+    
+    // 2. Vai buscar os últimos dados recebidos via ESP-NOW
+    struct_message mini1 = getDadosMini1();
+    struct_message mini2 = getDadosMini2();
+
+    // 3. Monta o JSON com tudo junto
+    String json = "{";
+    json += "\"v_master\":" + String(dados_master.tensao_V) + ",";
+    json += "\"c_master\":" + String(dados_master.corrente_mA) + ",";
+    json += "\"p_master\":" + String(dados_master.potencia_mW) + ",";
+    
+    // Adiciona o Mini 1
+    json += "\"v_mini1\":" + String(mini1.tensao_V) + ",";
+    json += "\"c_mini1\":" + String(mini1.corrente_mA) + ",";
+    json += "\"p_mini1\":" + String(mini1.potencia_mW) + ",";
+
+    // Adiciona o Mini 2
+    json += "\"v_mini2\":" + String(mini2.tensao_V) + ",";
+    json += "\"c_mini2\":" + String(mini2.corrente_mA) + ",";
+    json += "\"p_mini2\":" + String(mini2.potencia_mW);
+    json += "}";
+    
     server.send(200, "application/json", json);
   });
 
