@@ -5,6 +5,9 @@ Este repositório contém o firmware e a estrutura de diretórios de um sistema 
 
 O sistema foca-se na monitorização contínua da rede elétrica e na ativação automática de baterias gravitacionais de reserva, com o objetivo de assegurar a continuidade da produção elétrica em situações de falha na rede pública. 
 
+## Demonstração
+<img width="270" height="270" alt="demo" src="https://github.com/user-attachments/assets/0afb6257-05f0-4b40-8968-27cb2aa6c2c4" />
+
 ## Arquitetura do Sistema
 O projeto encontra-se particionado em quatro ambientes de compilação distintos geridos pelo PlatformIO, operando sobre o framework Arduino e a plataforma Espressif 32 (monitor serial configurado para 115200 baud rate)
 * **Master**: Nó de controlo principal e agregação de dados.
