@@ -1,6 +1,6 @@
 const MAX_LINHAS = 50; // Limite de histórico no navegador
 const TAXA_ATUALIZACAO_MS = 1000; // Taxa de atualização em milissegundos 
-
+//ola
 // --- Variáveis Globais para o Gráfico ---
 let graficoValores;
 const historicoTempo = [];
